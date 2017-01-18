@@ -2,6 +2,22 @@
     "name": "nuccleon/pushover-http",
     "description": "PHP http get/post API for pushover.net",
     "homepage": "https://github.com/nuccleon/pushover-http",
+    "keywords": [
+       "pushover",
+       "http",
+       "GET",
+       "POST",
+       "push",
+       "notification",
+       "api",
+       "mobile",
+       "ios",
+       "iphone",
+       "ipad",
+       "android",
+       "tablet"
+    ],    
+    "minimum-stability": "dev",
     "type": "library",
     "license": "MIT",
     "authors": [
