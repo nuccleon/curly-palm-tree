@@ -16,8 +16,7 @@
        "ipad",
        "android",
        "tablet"
-    ],    
-    "minimum-stability": "dev",
+    ],
     "type": "library",
     "license": "MIT",
     "authors": [
