@@ -1,0 +1,6 @@
+{
+    "require": {
+        "leonardoteixeira/pushover": "^1.1",
+        "components/jquery": "^3.1"        
+    }
+}
