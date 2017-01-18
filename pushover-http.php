@@ -21,7 +21,7 @@ $logger->logDebug("Process '".($_SERVER['REQUEST_URI'])."'");
  * HTTP API DESCRIPTION
  *
  * Pass parameter either with GET or with POST
- * At least user, token, message and priority
+ * At least user, token and priority
  */
 $dateFormat = 'Y-n-d H:i:s';   // supported format, e.g. 2009-02-15 15:16:17
 $mandatory = [ true, 'value' => null ]; // do not change from null to ""!
@@ -76,7 +76,6 @@ try {
     * represenation ($params) that will be used for the push message.
     */
     foreach($params as $key => &$value) {
-      //echo var_dump($request[$key]); echo empty($request[$key]); echo "<br>";
       $mandatory = $value[0];
       if(!isset($request[$key])) { // throw if the API key is not part of the request
          if($mandatory)
@@ -98,7 +97,7 @@ try {
             else if($errors['warning_count'] != 0)
                $error = reset($errors['warnings']);
             if(isset($error))
-               throw new Exception("Mandatory parameter '".$key."' has to be '".$dateFormat."' formatted (".$error.")");
+               throw new Exception("Optional parameter '".$key."' has to be '".$dateFormat."' formatted (".$error.")");
          }         
       }
    }
