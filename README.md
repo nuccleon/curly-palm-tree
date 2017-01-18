@@ -3,24 +3,18 @@
 A simple HTTP api for the [Pushover](https://pushover.net) sercvice.
 This is to make the service accessible for smaller devices that does not support https.
 
-## Installation
+### Install via composer
 
 Use the [Composer](https://getcomposer.org/) to install.
 
-### composer.json
-
-```json
-{
-	"require": {
-		"nuccleon/pushover-http": "*"
-	}
-}
+Add pushover-http to composer.json configuration file.
+```
+$ composer require nuccleon/pushover-http
 ```
 
-### Running the composer
-
+And update the composer
 ```
-composer install
+$ composer update
 ```
 
 ## Usage
