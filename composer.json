@@ -1,6 +1,16 @@
 {
+    "name": "nuccleon/pushover-http",
+    "description": "PHP http get/post API for pushover.net",
+    "type": "library",
     "require": {
-        "leonardoteixeira/pushover": "^1.1",
-        "components/jquery": "^3.1"        
-    }
+        "components/jquery": "^3.1",
+        "leonardoteixeira/pushover": "^1.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Claus Beckenbauer",
+            "email": "github@claus-beckenbauer.de"
+        }
+    ]
 }
