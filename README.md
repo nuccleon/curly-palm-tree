@@ -26,5 +26,6 @@ composer install
 ## Usage
 
 ### Basic Example using wget and GET
-
+```
 wget "localhost/pushover-http/pushover-http.php/?user=foo&token=bar&priority=&message=baz&title=&url=&urlTitle=&sound=&html=&device=&date="
+```
