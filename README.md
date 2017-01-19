@@ -19,6 +19,12 @@ $ composer update
 
 ## Usage
 
+### Configuration
+Provide your own pushover-http-config.php file to preset the http parameters.
+```
+cp pushover-http-config.template.php > pushover-http-config.php
+```
+
 ### Basic Example using wget and GET
 ```
 wget "localhost/pushover-http/pushover-http.php/?user=foo&token=bar&priority=&message=baz&title=&url=&urlTitle=&sound=&html=&device=&date="
