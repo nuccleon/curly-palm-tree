@@ -25,7 +25,7 @@ include CONFIG_FILE; // optional include of the configuration after PhpErrorHand
  * HTTP API DESCRIPTION
  *
  * Pass parameter either with GET or with POST
- * At least user, token and priority
+ * At least user, token and message
  */
 $dateFormat = 'Y-n-d H:i:s';   // supported format, e.g. 2009-02-15 15:16:17
 $mandatory = [ true, 'value' => null ]; // Comes either form POST/GET or from pushover-http.config.php. Do not change from null to ""!
