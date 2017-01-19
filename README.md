@@ -23,3 +23,6 @@ $ composer update
 ```
 wget "localhost/pushover-http/pushover-http.php/?user=foo&token=bar&priority=&message=baz&title=&url=&urlTitle=&sound=&html=&device=&date="
 ```
+
+## Degugging
+Append ```pushover-http.php?echo``` to the query to redirect the logger output to the http response instead of the logfile
