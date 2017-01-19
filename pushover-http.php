@@ -12,7 +12,7 @@ use LeonardoTeixeira\Pushover\Sound;
 use LeonardoTeixeira\Pushover\Exceptions\PushoverException;
 
 const CONFIG_FILE = 'pushover-http-config.php';
-const LOG_FILE = 'pushover-http.log';
+const LOG_FILE = '/var/tmp/pushover-http.log';
 const VERBOSITY = DebugLogger::DEBUG;
 
 $logger = new DebugLogger(VERBOSITY, LOG_FILE);
