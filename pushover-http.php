@@ -12,7 +12,7 @@ use LeonardoTeixeira\Pushover\Sound;
 use LeonardoTeixeira\Pushover\Exceptions\PushoverException;
 
 $verbosity = DebugLogger::DEBUG;
-$logfile = "pushover-http.log";
+$logfile = "/var/tmp/pushover-http.log";
 $logger = new DebugLogger($verbosity, $logfile);
 $errorhanlder = new PhpErrorHandler($verbosity, $logfile);
 $logger->logDebug("Process '".($_SERVER['REQUEST_URI'])."'");
