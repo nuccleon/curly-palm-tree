@@ -6,11 +6,14 @@ class DebugLogger {
    const FATAL = 3;
 
    public function __construct ($level, $logfile) {
+      $this->echo = isset($_GET['echo']) ? true : false;
       $this->verbosity = $level;
-      $this->fd=fopen($logfile,"a");
+      if(!$this->echo)
+         $this->fd=fopen($logfile,"a");
    }
    public function __destruct() {
-      fclose($this->fd);
+      if(!$this->echo)
+         fclose($this->fd);
    }  
    public function logDebug($message){
       $this->log(self::DEBUG, $message);
@@ -52,7 +55,10 @@ class DebugLogger {
                   case self::FATAL: $slevel = "[FATAL]"; break;
                }
                $logmsg = $time.' '.$slevel.' '.$message.PHP_EOL;
-               fputs($this->fd, $logmsg);
+               if(!$this->echo)
+                  fputs($this->fd, $logmsg);
+               else
+                  echo $logmsg."<br>";
                break;
             default:
                $this->logFatal("Failed to log messages of type '".$type."'");
@@ -61,5 +67,6 @@ class DebugLogger {
    }
    private $verbosity; 
    private $fd;
+   private $echo;
 }
 ?>
