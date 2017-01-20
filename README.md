@@ -22,7 +22,7 @@ $ composer update
 ### Configuration
 Provide your own pushover-http-config.php file to preset the http parameters.
 ```
-cp pushover-http-config.template.php > pushover-http-config.php
+cat pushover-http-config.template.php > pushover-http-config.php
 ```
 
 ### Basic Example using wget and GET
