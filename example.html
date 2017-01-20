@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <meta http-equiv="content-type" content="text/html; charset=utf-8">   
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
       <script src="vendor/components/jquery/jquery.min.js"></script>
       <script type="text/javascript">
       function changeMethod() {
          var method = document.querySelector('input[name = "method"]:checked').value;
-         $("#myform").attr("method", method); 
+         $("#myform").attr("method", method);
          document.getElementById('rbget').removeAttribute('name');
          document.getElementById('rbpost').removeAttribute('name');
       }
-      </script>      
+      </script>
    </head>
 <body>
 
@@ -19,18 +19,21 @@
   token:   <br><input type="text" name="token"^                                      ><br>
   priority:<br><input type="text" name="priority"                                    ><br>
   message: <br><input type="text" name="message"                                     ><br>
-  title:   <br><input type="text" name="title"                                       ><br>  
-  url:     <br><input type="text" name="url"                                         ><br>    
-  urlTitle:<br><input type="text" name="urlTitle"                                    ><br>    
-  sound:   <br><input type="text" name="sound"                                       ><br>   
-  html:    <br><input type="text" name="html"                                        ><br>    
-  device:  <br><input type="text" name="device"                                      ><br>    
-  date:    <br><input type="text" name="date"                                        ><br>      
+  title:   <br><input type="text" name="title"                                       ><br>
+  url:     <br><input type="text" name="url"                                         ><br>
+  urlTitle:<br><input type="text" name="urlTitle"                                    ><br>
+  sound:   <br><input type="text" name="sound"                                       ><br>
+  html:    <br><input type="text" name="html"                                        ><br>
+  device:  <br><input type="text" name="device"                                      ><br>
+  date:    <br><input type="text" name="date"                                        ><br>
+  retry:   <br><input type="text" name="retry"                                       ><br>
+  expire:  <br><input type="text" name="expire"                                      ><br>
+  callback:<br><input type="text" name="callback"                                    ><br>
            <br><input type="submit" value="submit" onclick="changeMethod()"          >
                <input type="radio" name="method" value="get"  id="rbget" checked     > GET
                <input type="radio" name="method" value="post" id="rbpost"            > POST
-  
-</form> 
+
+</form>
 </body>
 </html>
 
