@@ -127,7 +127,7 @@ try {
     * - 'retry' and expire becomes mandatory in case of 'priority is EMERGENCY (2)
     */
    if(!is_null($params['date']['value'])) {
-      $params['date']['value'] = DateTime::createFromFormat(DATE_FORMAT, $request[$key]);
+      $params['date']['value'] = DateTime::createFromFormat(DATE_FORMAT, $params['date']['value']);
       $errors = DateTime::getLastErrors();
       if($errors['error_count'] != 0)
          $error = reset($errors['errors']);
