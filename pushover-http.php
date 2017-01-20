@@ -12,7 +12,7 @@ use LeonardoTeixeira\Pushover\Sound;
 use LeonardoTeixeira\Pushover\Exceptions\PushoverException;
 
 const CONFIG_FILE = 'pushover-http-config.php';
-const LOG_FILE = 'pushover-http.log';
+const LOG_FILE = '/var/tmp/pushover-http.log';
 const VERBOSITY = DebugLogger::DEBUG;
 const DATE_FORMAT = 'Y-n-d H:i:s'; // supported format, e.g. 2009-02-15 15:16:17
 
