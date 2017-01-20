@@ -3,8 +3,8 @@ require_once 'DebugLogger.php';
 
 class PhpErrorHandler {
    public function __construct ($verbosity, $logfile) {
-      $this->errorhandler = set_error_handler(array($this, 'error_handler'));
       $this->logger = new DebugLogger($verbosity, $logfile);
+      $this->errorhandler = set_error_handler(array($this, 'error_handler'));
    }
    public function __destruct() {
       set_error_handler($this->errorhandler);
