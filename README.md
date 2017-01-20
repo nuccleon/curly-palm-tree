@@ -20,7 +20,7 @@ $ composer update
 ## Usage
 
 ### Configuration
-Provide your own pushover-http-config.php file to preset the http parameters.
+Provide your own pushover-http.ini.php file to preset the http parameters.
 ```
 cat pushover-http-config.ini.php.template > pushover-http-config.ini.php
 ```
