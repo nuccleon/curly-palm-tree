@@ -12,8 +12,9 @@ use LeonardoTeixeira\Pushover\Sound;
 use LeonardoTeixeira\Pushover\Exceptions\PushoverException;
 
 const CONFIG_FILE = 'pushover-http-config.php';
-const LOG_FILE = '/var/tmp/pushover-http.log';
+const LOG_FILE = 'pushover-http.log';
 const VERBOSITY = DebugLogger::DEBUG;
+const DATE_FORMAT = 'Y-n-d H:i:s'; // supported format, e.g. 2009-02-15 15:16:17
 
 $logger = new DebugLogger(VERBOSITY, LOG_FILE);
 $errorhanlder = new PhpErrorHandler(VERBOSITY, LOG_FILE);
@@ -25,9 +26,12 @@ include CONFIG_FILE; // optional include of the configuration after PhpErrorHand
  * HTTP API DESCRIPTION
  *
  * Pass parameter either with GET or with POST
- * At least user, token and message
+ * At least user, token and priority
+ *
+ * NOTE THAT 'echo' COULD only GETted
+ *
+ * see https://pushover.net/api for detailed parameter description
  */
-$dateFormat = 'Y-n-d H:i:s';   // supported format, e.g. 2009-02-15 15:16:17
 $mandatory = [ true, 'value' => null ]; // Comes either form POST/GET or from pushover-http.config.php. Do not change from null to ""!
 $optional = [ false, 'value' => null ]; // null variables will not be set in the message object (see pushover message preparation section)
 $params = [
@@ -45,10 +49,13 @@ $params = [
    'url'       =>  $optional,  // a supplementary URL to show with your message
    'urlTitle'  =>  $optional,  // a title for your supplementary URL, otherwise just the URL is shown
    'sound'     =>  $optional,  // The name of one of the sounds supported by device clients to override the user's default sound choice
-   'html'      =>  $optional,  // tbd
+   'html'      =>  $optional,  // To enable HTML formatting. The normal message content in your message parameter will then be displayed as HTML. 
    'date'      =>  $optional,  // a Unix timestamp of your message's date and time to display to the user, rather than the time your message is received by our API
-                               // has to be formated as defined in $dateFormat
-   'echo'      =>  $optional   // set this to redirect debug logs to the http response
+                               // has to be formated as defined in DATE_FORMAT
+   'retry'     =>  $optional,  // Specifies how often (in seconds) the Pushover servers will send the same notification to the user (EMERGENCY only, mandatory for EMERGENCY)
+   'expire'    =>  $optional,  // The expire parameter specifies how many seconds your notification will continue to be retried (EMERGENCY only, mandatory for EMERGENCY)
+   'callback'  =>  $optional,  // The optional callback parameter may be supplied with a publicly-accessible URL that our servers will send a request to when the user has acknowledged your notification.
+   'echo'      =>  $optional   // set this to redirect debug logs to the http response (GET only)
 ];
 
 try {
@@ -110,20 +117,36 @@ try {
             $method = $_SERVER['REQUEST_METHOD'];
          }
          $logger->logDebug("Got ".$requirement." '".$key."=".$value['value']."' via '".$method."'");
-
-         // special handling for date required... need DateTime object
-         if($key == 'date') {
-            $value['value'] = DateTime::createFromFormat($dateFormat, $request[$key]);
-            $errors = DateTime::getLastErrors();
-            if($errors['error_count'] != 0)
-               $error = reset($errors['errors']);
-            else if($errors['warning_count'] != 0)
-               $error = reset($errors['warnings']);
-            if(isset($error))
-               throw new Exception("Optional parameter '".$key."' has to be '".$dateFormat."' formatted (".$error.")");
-         }
       }
    }
+
+   /***************************************************************************
+    * Validate parameters
+    * - 'date' has to be formated as defined in DATE_FORMAT, e.g. Y-n-d H:i:s
+    * - 'callback' has to be an valid http/https URL
+    * - 'retry' and expire becomes mandatory in case of 'priority is EMERGENCY (2)
+    */
+   if(!is_null($params['date']['value'])) {
+      $params['date']['value'] = DateTime::createFromFormat(DATE_FORMAT, $request[$key]);
+      $errors = DateTime::getLastErrors();
+      if($errors['error_count'] != 0)
+         $error = reset($errors['errors']);
+      else if($errors['warning_count'] != 0)
+         $error = reset($errors['warnings']);
+      if(isset($error))
+         throw new Exception("Optional parameter 'date' has to be '".DATE_FORMAT."' formatted (".$error.")");
+   }
+   if(!is_null($params['priority']['value'])) {
+      if(is_null($params['retry']['value']))
+         throw new Exception("Mandatory parameter 'retry' is missing");
+      if(is_null($params['expire']['value']))
+         throw new Exception("Mandatory parameter 'expire' is missing");
+   }
+   if(!is_null($params['callback']['value'])) {
+      if (!preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i' ,$params['callback']['value']))
+         throw new Exception("'callback' has to be an valid http / https URL");
+   }
+   
 } catch (Exception $e) {
    $logger->logFatal($e);
    // return error text to the requestor and return HTTP 'Bad Request'
@@ -147,6 +170,10 @@ try {
       $message->setUrlTitle($params['urlTitle']['value']);
    if(!is_null($params['priority']['value']))
       $message->setPriority($params['priority']['value']);
+   if(!is_null($params['retry']['value']))
+      $message->setRetry($params['retry']['value']);
+   if(!is_null($params['expire']['value']))
+      $message->setExpire($params['expire']['value']);
    if(!is_null($params['sound']['value']))
       $message->setSound($params['sound']['value']);
    if(!is_null($params['html']['value'] != ""))
