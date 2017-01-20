@@ -32,7 +32,7 @@ NOTE THAT 'echo' COULD only GETted.
 
 See [Pushover-API](https://pushover.net/api) for detailed parameter description.
 
-```
+```PHP
 $params = [
    'user'      =>  $mandatory ,// the user/group key (not e-mail address) of your user (or you), viewable
                                // when logged into our dashboard (often referred to as USER_KEY in our
