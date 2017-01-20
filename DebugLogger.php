@@ -8,11 +8,15 @@ class DebugLogger {
    public function __construct ($level, $logfile) {
       $this->echo = isset($_GET['echo']) ? true : false;
       $this->verbosity = $level;
-      if(!$this->echo)
+      if(!$this->echo) {
          $this->fd=fopen($logfile,"a");
+         if(!$this->fd) {
+            echo "Failed to create log file... Ignore!<br>";
+         }
+      }
    }
    public function __destruct() {
-      if(!$this->echo)
+      if($this->fd && !$this->echo)
          fclose($this->fd);
    }  
    public function logDebug($message){
@@ -28,6 +32,9 @@ class DebugLogger {
       $this->log(self::FATAL, $message);
    }
    private function log($level, $message){
+      if(!$this->fd && !$this->echo)
+         return; // logfile wasn't greated
+
       if($level >= $this->verbosity) {
          $type = gettype ( $message );
          switch($type) {
