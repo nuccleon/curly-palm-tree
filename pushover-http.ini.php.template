@@ -1,0 +1,29 @@
+;<?php
+;die(); // For further security
+;/*
+
+[generic]
+logfile        = /var/tmp/pushover-http.log     ; log file name
+verbosity      = 0                              ; DEBUG=0, WARN=1, ERROR=2, FATAL=3
+dateformat     = Y-n-d H:i:s                    ; supported format, e.g. 2009-02-15 15:16:17
+
+[notification]
+user=u5w94jXXXXXXXXXXXXXXXX85optgse9
+token=auvpdjXXXXXXXXXXXXXXXX7emrkpy1b
+priority=0
+device=
+sound=pushover
+html=true
+
+[alert]
+user=u5w94jXXXXXXXXXXXXXXXX85optgse9
+token=auvpdjXXXXXXXXXXXXXXXX7emrkpy1b
+priority=2
+device=
+sound=siren 
+html=true
+retry=30
+expire=100
+;*/
+
+;?>

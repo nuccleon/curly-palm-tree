@@ -11,7 +11,7 @@ class DebugLogger {
       if(!$this->echo) {
          $this->fd=fopen($logfile,"a");
          if(!$this->fd) {
-            echo "Failed to create log file... Ignore!<br>";
+            echo "Failed to create log file ".$logfile." Ignore!<br>";
          }
       }
    }
