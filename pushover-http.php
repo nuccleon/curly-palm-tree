@@ -9,6 +9,8 @@ use LeonardoTeixeira\Pushover\Client;
 use LeonardoTeixeira\Pushover\Message;
 use LeonardoTeixeira\Pushover\Priority;
 use LeonardoTeixeira\Pushover\Sound;
+use LeonardoTeixeira\Pushover\Status;
+use LeonardoTeixeira\Pushover\Receipt;
 use LeonardoTeixeira\Pushover\Exceptions\PushoverException;
 
 const INI_FILE       = 'pushover-http.ini.php';
@@ -36,7 +38,9 @@ const API_CONFIG     = 'config';
 /**
  * Parse gerneric configuration part from the ini file
  */
-$iniFile = parse_ini_file(INI_FILE, true);
+$iniFile = false;
+if(file_exists(INI_FILE))
+   $iniFile = parse_ini_file(INI_FILE, true);
 $cfg_generic = array();
 if($iniFile && array_key_exists('generic', $iniFile))
    $cfg_generic = &$iniFile['generic'];
@@ -109,7 +113,7 @@ try {
     * They will be overwritten with POST/GET values.
     */
    if(!$iniFile) {
-      $logger->logDebug("Did not found any configuration");
+      $logger->logDebug("Did not found ".INI_FILE);
    } else if(isset($request[API_CONFIG])) {
       if(empty($request[API_CONFIG] || !array_key_exists($request[API_CONFIG], $iniFile))) {
          throw new Exception("ini file does not contain the requested configuration for ".$request[API_CONFIG]);
@@ -218,9 +222,15 @@ try {
     * Pushover message sending
     */
    $client = new Client($httpApi[API_USER][API_VALUE], $httpApi[API_TOKEN][API_VALUE]);
-   $client->push($message, $httpApi[API_DEVICE][API_VALUE]);
-
+   $receipt = $client->push($message, $httpApi[API_DEVICE][API_VALUE]);
+   if(!$receipt->hasReceipt()){
+      $logger->logDebug("Got no receipt for prio ".$message->getPriority());
+      $receipt->setReceipt("000000000000000000000000000000");
+   }
    $logger->logDebug("The message has been pushed!");
+   
+   // HTTP response
+   echo $receipt->getReceipt();   
 } catch (Exception $e) {
    $logger->logFatal($e);
    // return error text to the requestor and return HTTP 'Internal Server Error'

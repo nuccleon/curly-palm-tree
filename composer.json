@@ -25,8 +25,14 @@
             "email": "github@claus-beckenbauer.de"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nuccleon/pushover.git"
+        }
+    ],
     "require": {
         "components/jquery": "^3.1",
-        "leonardoteixeira/pushover": "^1.1"
+        "leonardoteixeira/pushover": "dev-patch-1"
     }
 }
