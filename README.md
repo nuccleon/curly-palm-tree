@@ -1,7 +1,7 @@
 # Pushover for HTTP
 
-A simple HTTP api for the [Pushover](https://pushover.net) sercvice.
-This is to make the service accessible for smaller devices that does not support https.
+A simple HTTP api for the [Pushover](https://pushover.net) sercice.
+This is to make the service accessible for smaller (e.g. embedded) devices that does not support https.
 
 ### Install via composer
 
@@ -28,12 +28,11 @@ cat pushover-http-config.ini.php.template > pushover-http-config.ini.php
 ### HTTP API
 Pass parameter either with GET or with POST, At least user, token and priority.
 
-NOTE THAT 'echo' COULD only GETted.
-
 See [Pushover-API](https://pushover.net/api) for detailed parameter description.
 
 ```PHP
-'user'      =>  $mandatory ,// the user/group key (not e-mail address) of your user (or you), viewable
+'job'       =>  $mandatory, // Job selector. 'push' or 'poll' allowed.
+'user'      =>  $mandatory, // the user/group key (not e-mail address) of your user (or you), viewable
                             // when logged into our dashboard (often referred to as USER_KEY in our
                             // documentation and code examples)
 'token'     =>  $mandatory, // your application's API token
@@ -53,13 +52,14 @@ See [Pushover-API](https://pushover.net/api) for detailed parameter description.
 'retry'     =>  $optional,  // Specifies how often (in seconds) the Pushover servers will send the same notification to the user (EMERGENCY only, mandatory for EMERGENCY)
 'expire'    =>  $optional,  // The expire parameter specifies how many seconds your notification will continue to be retried (EMERGENCY only, mandatory for EMERGENCY)
 'callback'  =>  $optional,  // The optional callback parameter may be supplied with a publicly-accessible URL that our servers will send a request to when the user has acknowledged your notification.
+'receipt'   =>  $mandatory, // This receipt can be used to periodically poll the receipts API to get the status of your notification
 'echo'      =>  $optional   // set this to redirect debug logs to the http response (GET only)
 'config'    =>  $optional   // The configuration group within the ini-file that should be used
 ```
 
 ### Basic Example using wget and GET
 ```
-wget "localhost/pushover-http/pushover-http.php/?user=foo&token=bar&message=baz&config=my
+wget "localhost/pushover-http/pushover-http.php/?job=push&user=foo&token=bar&message=baz&config=my
 ```
 
 ## Degugging
