@@ -110,14 +110,16 @@ try {
     */
    if(!$iniFile) {
       $logger->logDebug("Did not found any configuration");
-   } else if(isset($request[API_CONFIG]) && (empty($request[API_CONFIG]) || !array_key_exists($request[API_CONFIG], $iniFile))) {
-      throw new Exception("ini file does not contain the requested configuration for ".$request[API_CONFIG]);
-   } else {
-      foreach($iniFile[$request[API_CONFIG]] as $key => $value) {
-         if(!isset($httpApi[$key])) { // check if parameter from config file exists in the API params ...
-            throw new Exception("Invalid parameter '".$key."' found in the ini file");
-         } else if(!empty($value)) {  // and copy it to the API params if it has also a valid value
-            $httpApi[$key][API_VALUE] = $value;
+   } else if(isset($request[API_CONFIG])) {
+      if(empty($request[API_CONFIG] || !array_key_exists($request[API_CONFIG], $iniFile))) {
+         throw new Exception("ini file does not contain the requested configuration for ".$request[API_CONFIG]);
+      } else {
+         foreach($iniFile[$request[API_CONFIG]] as $key => $value) {
+            if(!isset($httpApi[$key])) { // check if parameter from config file exists in the API params ...
+               throw new Exception("Invalid parameter '".$key."' found in the ini file");
+            } else if(!empty($value)) {  // and copy it to the API params if it has also a valid value
+               $httpApi[$key][API_VALUE] = $value;
+            }
          }
       }
    }
