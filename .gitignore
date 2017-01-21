@@ -1,3 +1,4 @@
 pushover-http.ini.php
 composer.lock
 /vendor
+pushover-http.log
