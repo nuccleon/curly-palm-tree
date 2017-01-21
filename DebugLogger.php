@@ -6,7 +6,7 @@ class DebugLogger {
    const FATAL = 3;
 
    public function __construct ($level, $logfile) {
-      $this->echo = isset($_GET['echo']) ? true : false;
+      $this->echo = isset($_GET['echo']) ? true : isset($_POST['echo']) ? true : false;  ;
       $this->verbosity = $level;
       if(!$this->echo) {
          $this->fd=fopen($logfile,"a");
