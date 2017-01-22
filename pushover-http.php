@@ -14,7 +14,7 @@ use LeonardoTeixeira\Pushover\Status;
 use LeonardoTeixeira\Pushover\Exceptions\PushoverException;
 
 const INI_FILE       = 'pushover-http.ini.php';
-const CFG_LOGFILE    = '/var/tmp/logfile';
+const CFG_LOGFILE    = 'logfile';
 const CFG_VERBOSITY  = 'verbosity';
 const CFG_DATEFORMAT = 'dateformat';
 const JOB_POLL       = 'poll';
@@ -144,7 +144,7 @@ try {
       $logger->logDebug("Did not found ".INI_FILE);
    } else if(isset($request[API_CONFIG])) {
       if($request[API_CONFIG] == "" || !array_key_exists($request[API_CONFIG], $iniFile)) {
-         throw new Exception("INI file does not contain the requested configuration for ".$request[API_CONFIG]);
+         throw new Exception("INI file does not contain a valid configuration");
       } else {
          foreach($iniFile[$request[API_CONFIG]] as $key => $value) {
             if(isset($httpApi[$key]) && $value != "") {
