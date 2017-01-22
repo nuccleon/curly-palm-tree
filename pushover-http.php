@@ -142,9 +142,9 @@ try {
     */
    if(!$iniFile) {
       $logger->logDebug("Did not found ".INI_FILE);
-   } else if(isset($request[API_CONFIG])) {
-      if($request[API_CONFIG] == "" || !array_key_exists($request[API_CONFIG], $iniFile)) {
-         throw new Exception("INI file does not contain a valid configuration");
+   } else if(isset($request[API_CONFIG]) && $request[API_CONFIG] != "") {
+      if(!array_key_exists($request[API_CONFIG], $iniFile)) {
+         throw new Exception("INI file does not contain ".$request[API_CONFIG]);
       } else {
          foreach($iniFile[$request[API_CONFIG]] as $key => $value) {
             if(isset($httpApi[$key]) && $value != "") {
