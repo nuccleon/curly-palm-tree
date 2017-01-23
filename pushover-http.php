@@ -280,7 +280,7 @@ try {
        * Pushover cancelling
        */
       $client = new Client(null, $httpApi[API_TOKEN][API_VALUE]);
-      $status = $client->cancel($receipt);
+      $client->cancel($receipt);
       $logger->logDebug("Notification with the receipt ".$httpApi[API_RECEIPT][API_VALUE]." has been cancelled!");
    }
    else {
