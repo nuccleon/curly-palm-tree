@@ -9,37 +9,38 @@
 <table><tr>
 <td valign="top">
    <form action="pushover-http.php" id="pushover">
-     config:  <br><input type="text" id="pushconfig" name="config" size="42"                ><br>
-     user:    <br><input type="text" id="pushuser" name="user" size="42"                    ><br>
-     token:   <br><input type="text" id="pushtoken" name="token" size="42"                  ><br>
-     priority:<br><input type="text" id="pushpriority" name="priority" size="42"            ><br>
-     message: <br><input type="text" id="pushmessage" name="message" size="42"              ><br>
-     title:   <br><input type="text" id="pushtitle" name="title" size="42"                  ><br>
-     url:     <br><input type="text" id="pushurl" name="url" size="42"                      ><br>
-     urlTitle:<br><input type="text" id="pushurltitle" name="urlTitle" size="42"            ><br>
-     sound:   <br><input type="text" id="pushsound" name="sound" size="42"                  ><br>
-     html:    <br><input type="text" id="pushhtml" name="html" size="42"                    ><br>
-     device:  <br><input type="text" id="pushdevice" name="device" size="42"                ><br>
-     date:    <br><input type="text" id="pushdatetime" name="datetime" size="42"            ><br>
-     retry:   <br><input type="text" id="pushretry" name="retry" size="42"                  ><br>
-     expire:  <br><input type="text" id="pushexpire" name="expire" size="42"                ><br>
-     callback:<br><input type="text" id="pushcallback" name="callback" size="42"            ><br>
-              <br><input type="submit" id="pushsubmit" value="push" size="42"               >
-                  <input type="radio" name="method" value="get" id="pushrbget" checked      > GET
-                  <input type="radio" name="method" value="post" id="pushrbpost"            > POST
-                  <input type="checkbox" name="debug" value="debug" id="pushdebug"          > DEBUG
+     config:  <br><input type="text" id="pushconfig" name="config" size="50"                                      ><br>
+     user:    <br><input type="text" id="pushuser" name="user" size="50"                                          ><br>
+     token:   <br><input type="text" id="pushtoken" name="token" size="50"                                        ><br>
+     priority:<br><input type="text" id="pushpriority" name="priority" size="50"                                  ><br>
+     message: <br><input type="text" id="pushmessage" name="message" size="50"                                    ><br>
+     title:   <br><input type="text" id="pushtitle" name="title" size="50"                                        ><br>
+     url:     <br><input type="text" id="pushurl" name="url" size="50"                                            ><br>
+     urlTitle:<br><input type="text" id="pushurltitle" name="urlTitle" size="50"                                  ><br>
+     sound:   <br><input type="text" id="pushsound" name="sound" size="50"                                        ><br>
+     html:    <br><input type="text" id="pushhtml" name="html" size="50"                                          ><br>
+     device:  <br><input type="text" id="pushdevice" name="device" size="50"                                      ><br>
+     date:    <br><input type="text" id="pushdatetime" name="datetime" size="50"                                  ><br>
+     retry:   <br><input type="text" id="pushretry" name="retry" size="50"                                        ><br>
+     expire:  <br><input type="text" id="pushexpire" name="expire" size="50"                                      ><br>
+     callback:<br><input type="text" id="pushcallback" name="callback" size="50"                                  ><br>
+              <br><input type="button" id="pushsubmit" value="push" size="50" onclick="subPush(this.form);"       >
+                  <input type="radio" name="method" value="get" id="pushrbget" checked                            > GET
+                  <input type="radio" name="method" value="post" id="pushrbpost"                                  > POST
+                  <input type="checkbox" name="debug" value="debug" id="pushdebug"                                > DEBUG
 
    </form>
 </td>
 <td valign="top">
    <form action="pushover-http.php" id="poll">
-     config:  <br><input type="text" id="pollconfig" name="config" size="42"                ><br>
-     receipt: <br><input type="text" id="pollreceipt" name="receipt" size="42"              ><br>
-     token:   <br><input type="text" id="polltoken" name="token" size="42"                  ><br>
-              <br><input type="submit" id="pollsubmit" value="poll"                         >
-              <input type="radio" name="method" value="get" id="pollrbget" checked          > GET
-              <input type="radio" name="method" value="post" id="pollrbpost"                > POST
-              <input type="checkbox" name="debug" value="debug" id="polldebug"              > DEBUG              
+     config:  <br><input type="text" id="pollconfig" name="config" size="50"                                      ><br>
+     receipt: <br><input type="text" id="pollreceipt" name="receipt" size="50"                                    ><br>
+     token:   <br><input type="text" id="polltoken" name="token" size="50"                                        ><br>
+              <br><input type="button" id="pollsubmit" value="poll" onclick="subPollCancel(this.form, 'poll');"   >
+              <input type="button" id="cancelsubmit" value="cancel" onclick="subPollCancel(this.form, 'cancel');" >
+              <input type="radio" name="method" value="get" id="pollrbget" checked                                > GET
+              <input type="radio" name="method" value="post" id="pollrbpost"                                      > POST
+              <input type="checkbox" name="debug" value="debug" id="polldebug"                                    > DEBUG              
    </form>
 </td>
 </tr>
@@ -60,18 +61,14 @@
    /*
     * pushover from submit
     */
+   function subPush(form) {
+       $("#result").empty();
 
-   $("#pushover").submit(function(event) {
-       $("#result").empty()
+      /* get some values from elements on the page: */
+      url = form.action;
 
-       /* stop form from submitting normally */
-       event.preventDefault();
-       /* get some values from elements on the page: */
-       var $form = $(this),
-           url = $form.attr('action');
-
-       /* Send the data using post/get */
-       data = {
+      /* Send the data using post/get */
+      data = {
          job: 'push',
          config: $('#pushconfig').val(),
          user: $('#pushuser').val(),
@@ -87,64 +84,65 @@
          retry: $('#pushretry').val(),
          expire: $('#pushexpire').val(),
          callback: $('#pushcallback').val()
-       };
+      };
 
-       if($('#pushdebug').prop("checked"))
+      if($('#pushdebug').prop("checked"))
          data.echo = 1;
 
-       if($('#pushrbget').prop("checked")) {
+      if($('#pushrbget').prop("checked")) {
          var posting = $.get(url, data);
-       } else {
+      } else {
          var posting = $.post(url, data);
-       }
-       /* Put the results in a div */
-       posting.done(function(data) {
-           $("#result").append(data);           
-           var receipt = data.match('[A-Za-z0-9]{30}')
-           var pollform = document.getElementById('poll');
-           pollform.elements["pollreceipt"].value = receipt;
-           pollform.elements["polltoken"].value = $('#pushtoken').val();
-           pollform.elements["pollconfig"].value = $('#pushconfig').val();
-       });
-       posting.fail(function(data) {
-           $("#result").append("[" + data.status + "] " + data.statusText + "<br>" + data.responseText);
-       });
-   });
+      }
+      /* Put the results in a div */
+      posting.done(function(data) {
+         $("#result").append(data);           
+         var receipt = data.match('[A-Za-z0-9]{30}')
+         var pollform = document.getElementById('poll');
+         pollform.elements["pollreceipt"].value = receipt;
+         pollform.elements["polltoken"].value = $('#pushtoken').val();
+         pollform.elements["pollconfig"].value = $('#pushconfig').val();
+      });
+      posting.fail(function(data) {
+         $("#result").append("[" + data.status + "] " + data.statusText + "<br>" + data.responseText);
+      });
+   };
 
    /*
     * poll from submit
     */
-   $("#poll").submit(function(event) {
-       $("#result").empty();
+   function subPollCancel(form, job)
+   {
+      //document.myform.target = newtarget ;
+      //f.submit();
+ 
+      $("#result").empty();
 
-       /* stop form from submitting normally */
-       event.preventDefault();
-       /* get some values from elements on the page: */
-       var $form = $(this),
-           url = $form.attr('action');
+      /* get some values from elements on the page: */
+      url = form.action;
 
-       data = {
-         job: 'poll',
+      data = {
+         job: job,
          config: $('#pollconfig').val(),
          receipt: $('#pollreceipt').val(),
          token: $('#polltoken').val()
-       };
+      };
  
-       if($('#polldebug').prop("checked"))
+      if($('#polldebug').prop("checked"))
          data.echo = 1;
 
-       if($('#pollrbget').prop("checked")) {
+      if($('#pollrbget').prop("checked")) {
          var posting = $.get(url, data);
-       } else {
+      } else {
          var posting = $.post(url, data);
-       }
+      }
        
-       /* Put the results in a div */
-       posting.done(function(data) {
+      /* Put the results in a div */
+      posting.done(function(data) {
            $("#result").append(data);           
-       });
-       posting.fail(function(data) {
+      });
+      posting.fail(function(data) {
            $("#result").append("[" + data.status + "] " + data.statusText + "<br>" + data.responseText);
-       });
-   });
+      });
+   };
 </script>
