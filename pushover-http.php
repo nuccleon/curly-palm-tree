@@ -19,6 +19,7 @@ const CFG_VERBOSITY  = 'verbosity';
 const CFG_DATEFORMAT = 'dateformat';
 const JOB_POLL       = 'poll';
 const JOB_PUSH       = 'push';
+const JOB_CANCEL     = 'cancel';
 const API_JOB        = 'job';
 const API_USER       = 'user';
 const API_TOKEN      = 'token';
@@ -95,12 +96,12 @@ $httpPushApi = [
    API_CONFIG    =>  $optional   // The configuration group within the ini-file that should be used
 ];
 
-$httpPollApi = [
+$httpPollCancelApi = [
    API_JOB       =>  $mandatory, // Job selector. 'push' or 'poll' allowed.
    API_RECEIPT   =>  $mandatory, // This receipt can be used to periodically poll the receipts API to get the status of your notification
    API_TOKEN     =>  $mandatory, // Your application's API token
    API_ECHO      =>  $optional,  // Set this to redirect debug logs to the http response (GET only)
-   API_CONFIG    =>  $optional   // The configuration group within the ini-file that should be used   
+   API_CONFIG    =>  $optional   // The configuration group within the ini-file that should be used
 ];
 
 try {
@@ -118,12 +119,12 @@ try {
     * Selecht HTTP API
     */
    if(!isset($request[API_JOB]) || $request[API_JOB] == "") {
-      throw new Exception("Got no job parameter. Use either '".JOB_POLL."' or '".JOB_PUSH."'!");
-   } else if (!in_array($request[API_JOB], [JOB_POLL, JOB_PUSH])) {
-      throw new Exception("Job ".$request[API_JOB]." is invalid. Use either '".JOB_POLL."' or '".JOB_PUSH."'!");
+      throw new Exception("Got no job parameter. Use either '".JOB_POLL."', '".JOB_PUSH."' or '".JOB_CANCEL."'!");
+   } else if (!in_array($request[API_JOB], [JOB_POLL, JOB_PUSH, JOB_CANCEL])) {
+      throw new Exception("Job ".$request[API_JOB]." is invalid. Use either '".JOB_POLL."', '".JOB_PUSH."' or '".JOB_CANCEL."'!");
    } else {
-      if($request[API_JOB] == JOB_POLL) {
-         $httpApi = &$httpPollApi;
+      if($request[API_JOB] == JOB_POLL || $request[API_JOB] == JOB_CANCEL) {
+         $httpApi = &$httpPollCancelApi;
       } else {
          $httpApi = &$httpPushApi;
       }
@@ -232,7 +233,7 @@ try {
       if(!is_null($httpPushApi[API_HTML][API_VALUE]))
          $message->setHtml($httpPushApi[API_HTML][API_VALUE]);
       if(!is_null($httpPushApi[API_DATETIME][API_VALUE]))
-         $message->setDate($httpPushApi[API_DATETIME][API_VALUE]);      
+         $message->setDate($httpPushApi[API_DATETIME][API_VALUE]);
       /***************************************************************************
        * Pushover notification push
        */
@@ -245,32 +246,42 @@ try {
       $logger->logDebug("The message has been pushed!");
       /***************************************************************************
        * http response
-       */    
+       */
       echo $receipt->getReceipt();
-   } else if($httpApi[API_JOB][API_VALUE] == JOB_POLL) {    
+   } else if($httpApi[API_JOB][API_VALUE] == JOB_POLL) {
       /***************************************************************************
-       * Message preparation for push
-       */       
-      $receipt = new Receipt($httpPollApi[API_RECEIPT][API_VALUE]);       
+       * Message preparation for poll
+       */
+      $receipt = new Receipt($httpPollCancelApi[API_RECEIPT][API_VALUE]);
       /***************************************************************************
        * Pushover notification status polling
-       */       
+       */
       $client = new Client(null, $httpApi[API_TOKEN][API_VALUE]);
       $status = $client->poll($receipt);
       $logger->logDebug("Receipt ".$httpApi[API_RECEIPT][API_VALUE]." has been polled!");
       /***************************************************************************
        * http response
-       */    
-      echo Status::STATUS.": ".$status->getStatus()."<br>";     
+       */
       echo Status::ACKNOWLEDGED.": ".$status->getAcknowledged()."<br>";
       echo Status::ACKNOWLEDGED_AT.": ".$status->getAcknowledgedAt()."<br>";
       echo Status::ACKNOWLEDGED_BY.": ".$status->getAcknowledgedBy()."<br>";
       echo Status::ACKNOWLEDGED_BY_DEVICE.": ".$status->getAcknowledgedByDevice()."<br>";
       echo Status::LAST_DELIVERED_AT.": ".$status->getLastDeliveredAt()."<br>";
       echo Status::EXPIRED.": ".$status->getExpired()."<br>";
-      echo Status::EXPIRED_AT.": ".$status->getExpiredAt()."<br>";     
-      echo Status::CALLED_BACK.": ".$status->getCalledBack()."<br>";     
-      echo Status::CALLED_BACK_AT.": ".$status->getCalledBackAt();     
+      echo Status::EXPIRED_AT.": ".$status->getExpiredAt()."<br>";
+      echo Status::CALLED_BACK.": ".$status->getCalledBack()."<br>";
+      echo Status::CALLED_BACK_AT.": ".$status->getCalledBackAt();
+   } else if($httpApi[API_JOB][API_VALUE] == JOB_CANCEL) {
+      /***************************************************************************
+       * Message preparation for cancel
+       */
+      $receipt = new Receipt($httpPollCancelApi[API_RECEIPT][API_VALUE]);
+      /***************************************************************************
+       * Pushover cancelling
+       */
+      $client = new Client(null, $httpApi[API_TOKEN][API_VALUE]);
+      $status = $client->cancel($receipt);
+      $logger->logDebug("Notification with the receipt ".$httpApi[API_RECEIPT][API_VALUE]." has been cancelled!");
    }
    else {
       throw new Exception("Unexpected ".API_JOB." value ".$httpApi[API_JOB][API_VALUE]);
