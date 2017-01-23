@@ -31,7 +31,7 @@ Pass parameter either with GET or with POST, At least user, token and priority.
 See [Pushover-API](https://pushover.net/api) for detailed parameter description.
 
 ```PHP
-'job'       =>  $mandatory, // Job selector. 'push' or 'poll' allowed.
+'job'       =>  $mandatory, // Job selector. 'push', 'poll' or 'cancel' allowed.
 'user'      =>  $mandatory, // the user/group key (not e-mail address) of your user (or you), viewable
                             // when logged into our dashboard (often referred to as USER_KEY in our
                             // documentation and code examples)
