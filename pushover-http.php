@@ -49,6 +49,11 @@ $cfg_generic = array();
 if($iniFile && array_key_exists('generic', $iniFile))
    $cfg_generic = &$iniFile['generic'];
 
+/**
+ * Try to get generict config parameters from the INI_FILE
+ *
+ * NOTE Commpare always against "" since empty() will return true for "0"
+ */
 $logfile    = isset($cfg_generic[CFG_LOGFILE])    && $cfg_generic[CFG_LOGFILE] != ""    ? $cfg_generic[CFG_LOGFILE]    : 'pushover-http.log';
 $verbosity  = isset($cfg_generic[CFG_VERBOSITY])  && $cfg_generic[CFG_VERBOSITY] != ""  ? $cfg_generic[CFG_VERBOSITY]  : DebugLogger::DEBUG;
 $dateformat = isset($cfg_generic[CFG_DATEFORMAT]) && $cfg_generic[CFG_DATEFORMAT] != "" ? $cfg_generic[CFG_DATEFORMAT] : 'Y-n-d H:i:s';
@@ -61,9 +66,12 @@ $logger->logDebug("Process '".($_SERVER['REQUEST_URI'])."'");
  * HTTP API DESCRIPTION
  *
  * Pass parameter either with GET or with POST
- * At least user, token and priority
+ * For push:
+ *    Either config and message, or at least job, user, token and message
+ * For poll / cancel:
+ *    Either config and receipt or at least job, token and receipt
  *
- * NOTE THAT API_ECHO COULD only GETted
+ * NOTE THAT API_ECHO COULD WILL REDIRECT THE DEBUG LOGS TO THE HTTP RESPONSE
  *
  * see https://pushover.net/api for detailed parameter description
  */
@@ -115,8 +123,8 @@ try {
          throw new Exception("Unsupported request method '".$_SERVER['REQUEST_METHOD']."'");
    }
    /***************************************************************************
-    * Decide if we should push a notification of poll a notification status.
-    * Selecht HTTP API
+    * Decide if we should push a notification of poll / cancel a notification status.
+    * Select HTTP API
     */
    if(!isset($request[API_JOB]) || $request[API_JOB] == "") {
       throw new Exception("Got no job parameter. Use either '".JOB_POLL."', '".JOB_PUSH."' or '".JOB_CANCEL."'!");
@@ -157,7 +165,7 @@ try {
    /***************************************************************************
     * Check if all mandatory parameters are passed to the script.
     * copy parameters from the request query to the internal data
-    * represenation ($httpApi) that will be used for the push message.
+    * represenation ($httpApi) that will be used for the push, poll or cancel message.
     */
     foreach($httpApi as $key => &$value) {
       $mandatory = $value[0];
@@ -206,7 +214,7 @@ try {
          throw new Exception(API_CALLBACK." has to be an valid http / https URL");
    }
    /***************************************************************************
-    * Execute the poll / push job
+    * Execute the push, poll or cancel job
     */
    if($httpApi[API_JOB][API_VALUE] == JOB_PUSH) {
       /***************************************************************************
