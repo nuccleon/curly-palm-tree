@@ -62,5 +62,5 @@ See [Pushover-API](https://pushover.net/api) for detailed parameter description.
 wget "localhost/pushover-http/pushover-http.php/?job=push&user=foo&token=bar&message=baz&config=my
 ```
 
-## Degugging
+## Debugging
 Append ```pushover-http.php?echo``` to the query to redirect the logger output to the http response instead of the logfile
