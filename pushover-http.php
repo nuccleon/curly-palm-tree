@@ -25,6 +25,7 @@ const API_USER       = 'user';
 const API_TOKEN      = 'token';
 const API_MESSAGE    = 'message';
 const API_PRIORITY   = 'priority';
+const API_ATTACHMENT = 'attachment';
 const API_DEVICE     = 'device';
 const API_TITLE      = 'title';
 const API_URL        = 'url';
@@ -87,6 +88,7 @@ $httpPushApi = [
    API_PRIORITY  =>  $optional,  // Send as -2 to generate no notification/alert, -1 to always send as a quiet
                                  // notification, 1 to display as high-priority and bypass the user's quiet hours,
                                  // or 2 to also require confirmation from the user
+   API_ATTACHMENT=>  $optional,  // An image attachment to send with the message (could be either a path to the image or an URL to download the image from)
    API_DEVICE    =>  $optional,  // Your user's device name to send the message directly to that device,
                                  // rather than all of the user's devices (multiple devices may be separated by a comma)
    API_TITLE     =>  $optional,  // Your message's title, otherwise your app's name is used
@@ -112,7 +114,7 @@ $httpPollCancelApi = [
    API_CONFIG    =>  $optional   // The configuration group within the ini-file that should be used
 ];
 
-try {
+try {  
    /***************************************************************************
     * Select requested method...
     */
@@ -123,7 +125,7 @@ try {
          throw new Exception("Unsupported request method '".$_SERVER['REQUEST_METHOD']."'");
    }
    /***************************************************************************
-    * Decide if we should push a notification of poll / cancel a notification status.
+    * Decide if we should push a notification or poll / cancel a notification status.
     * Select HTTP API
     */
    if(!isset($request[API_JOB]) || $request[API_JOB] == "") {
@@ -192,6 +194,7 @@ try {
     * - API_DATETIME has to be formated as defined in $dateformat, e.g. Y-n-d H:i:s
     * - API_CALLBACK has to be an valid http/https URL
     * - API_RETRY and expire becomes mandatory in case of 'priority is EMERGENCY (2)
+    * - API_ATTACHMENT has to be an valid http/https URL or an existing file path
     */
    if(!is_null($httpPushApi[API_DATETIME][API_VALUE])) {
       $httpPushApi[API_DATETIME][API_VALUE] = DateTime::createFromFormat($dateformat, $httpPushApi[API_DATETIME][API_VALUE]);
@@ -210,8 +213,21 @@ try {
          throw new Exception("Mandatory parameter ".API_EXPIRE." is missing");
    }
    if(!is_null($httpPushApi[API_CALLBACK][API_VALUE])) {
-      if (!preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i' ,$httpPushApi[API_CALLBACK][API_VALUE]))
+      if (!filter_var($httpPushApi[API_CALLBACK][API_VALUE], FILTER_VALIDATE_URL))
          throw new Exception(API_CALLBACK." has to be an valid http / https URL");
+   }
+   if(!is_null($httpPushApi[API_ATTACHMENT][API_VALUE])) {
+      if (filter_var($httpPushApi[API_ATTACHMENT][API_VALUE], FILTER_VALIDATE_URL)) {
+         $request = Requests::get($httpPushApi[API_ATTACHMENT][API_VALUE], []);
+         if($request->status_code != '200')
+            throw new Exception("Failed to download ".$httpPushApi[API_ATTACHMENT][API_VALUE]);
+         $attachment = tmpfile();
+         fwrite($attachment,$request->body);
+         $meta_data = stream_get_meta_data($attachment);
+         $httpPushApi[API_ATTACHMENT][API_VALUE] = $meta_data["uri"];   
+      }
+      if(!file_exists($httpPushApi[API_ATTACHMENT][API_VALUE]))
+         throw new Exception("Failed to open ".API_ATTACHMENT);
    }
    /***************************************************************************
     * Execute the push, poll or cancel job
@@ -224,6 +240,8 @@ try {
       // values are preinitialized with null
       if(!is_null($httpPushApi[API_MESSAGE][API_VALUE]))
          $message->setMessage($httpPushApi[API_MESSAGE][API_VALUE]);
+      if(!is_null($httpPushApi[API_ATTACHMENT][API_VALUE]))
+         $message->setAttachment($httpPushApi[API_ATTACHMENT][API_VALUE]);
       if(!is_null($httpPushApi[API_TITLE][API_VALUE]))
          $message->setTitle($httpPushApi[API_TITLE][API_VALUE]);
       if(!is_null($httpPushApi[API_URL][API_VALUE]))

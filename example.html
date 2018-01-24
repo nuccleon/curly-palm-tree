@@ -9,25 +9,26 @@
 <table><tr>
 <td valign="top">
    <form action="pushover-http.php" id="pushover">
-     config:  <br><input type="text" id="pushconfig" name="config" size="50"                                      ><br>
-     user:    <br><input type="text" id="pushuser" name="user" size="50"                                          ><br>
-     token:   <br><input type="text" id="pushtoken" name="token" size="50"                                        ><br>
-     priority:<br><input type="text" id="pushpriority" name="priority" size="50"                                  ><br>
-     message: <br><input type="text" id="pushmessage" name="message" size="50"                                    ><br>
-     title:   <br><input type="text" id="pushtitle" name="title" size="50"                                        ><br>
-     url:     <br><input type="text" id="pushurl" name="url" size="50"                                            ><br>
-     urlTitle:<br><input type="text" id="pushurltitle" name="urlTitle" size="50"                                  ><br>
-     sound:   <br><input type="text" id="pushsound" name="sound" size="50"                                        ><br>
-     html:    <br><input type="text" id="pushhtml" name="html" size="50"                                          ><br>
-     device:  <br><input type="text" id="pushdevice" name="device" size="50"                                      ><br>
-     date:    <br><input type="text" id="pushdatetime" name="datetime" size="50"                                  ><br>
-     retry:   <br><input type="text" id="pushretry" name="retry" size="50"                                        ><br>
-     expire:  <br><input type="text" id="pushexpire" name="expire" size="50"                                      ><br>
-     callback:<br><input type="text" id="pushcallback" name="callback" size="50"                                  ><br>
-              <br><input type="button" id="pushsubmit" value="push" size="50" onclick="subPush(this.form);"       >
-                  <input type="radio" name="method" value="get" id="pushrbget" checked                            > GET
-                  <input type="radio" name="method" value="post" id="pushrbpost"                                  > POST
-                  <input type="checkbox" name="debug" value="debug" id="pushdebug"                                > DEBUG
+     config:    <br><input type="text" id="pushconfig" name="config" size="50"                                      ><br>
+     user:      <br><input type="text" id="pushuser" name="user" size="50"                                          ><br>
+     token:     <br><input type="text" id="pushtoken" name="token" size="50"                                        ><br>
+     priority:  <br><input type="text" id="pushpriority" name="priority" size="50"                                  ><br>
+     attachment:<br><input type="text" id="pushattachment" name="attachment" size="50"                              ><br>
+     message:   <br><input type="text" id="pushmessage" name="message" size="50"                                    ><br>
+     title:     <br><input type="text" id="pushtitle" name="title" size="50"                                        ><br>
+     url:       <br><input type="text" id="pushurl" name="url" size="50"                                            ><br>
+     urlTitle:  <br><input type="text" id="pushurltitle" name="urlTitle" size="50"                                  ><br>
+     sound:     <br><input type="text" id="pushsound" name="sound" size="50"                                        ><br>
+     html:      <br><input type="text" id="pushhtml" name="html" size="50"                                          ><br>
+     device:    <br><input type="text" id="pushdevice" name="device" size="50"                                      ><br>
+     date:      <br><input type="text" id="pushdatetime" name="datetime" size="50"                                  ><br>
+     retry:     <br><input type="text" id="pushretry" name="retry" size="50"                                        ><br>
+     expire:    <br><input type="text" id="pushexpire" name="expire" size="50"                                      ><br>
+     callback:  <br><input type="text" id="pushcallback" name="callback" size="50"                                  ><br>
+                <br><input type="button" id="pushsubmit" value="push" size="50" onclick="subPush(this.form);"       >
+                    <input type="radio" name="method" value="get" id="pushrbget" checked                            > GET
+                    <input type="radio" name="method" value="post" id="pushrbpost"                                  > POST
+                    <input type="checkbox" name="debug" value="debug" id="pushdebug"                                > DEBUG
 
    </form>
 </td>
@@ -74,6 +75,7 @@
          user: $('#pushuser').val(),
          token: $('#pushtoken').val(),
          priority: $('#pushpriority').val(),
+         attachment: $('#pushattachment').val(),
          message: $('#pushmessage').val(),
          title: $('#pushtitle').val(),
          url: $('#pushurl').val(),

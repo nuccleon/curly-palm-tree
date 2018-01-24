@@ -40,6 +40,7 @@ See [Pushover-API](https://pushover.net/api) for detailed parameter description.
 'priority'  =>  $optional,  // send as -2 to generate no notification/alert, -1 to always send as a quiet
                             // notification, 1 to display as high-priority and bypass the user's quiet hours,
                             // or 2 to also require confirmation from the user
+'attachment =>  $optional,  // An image attachment to send with the message (could be either a path to the image or an URL to download the image from)                            
 'device'    =>  $optional,  // your user's device name to send the message directly to that device,
                             // rather than all of the user's devices (multiple devices may be separated by a comma)
 'title'     =>  $optional,  // your message's title, otherwise your app's name is used
