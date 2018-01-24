@@ -28,11 +28,11 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/nuccleon/pushover.git"
+            "url": "https://github.com/nuccleon/pushover"
         }
     ],
     "require": {
         "components/jquery": "^3.1",
-        "leonardoteixeira/pushover": "dev-patch-1"
+        "leonardoteixeira/pushover": "dev-master"
     }
 }
