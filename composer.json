@@ -28,7 +28,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/nuccleon/pushover"
+            "url": "https://github.com/nuccleon/pushover-http"
         }
     ],
     "require": {
