@@ -354,14 +354,12 @@ try {
        * Pushover  glances
        */
       $client = new Client($httpGlancesApi[API_USER][API_VALUE], $httpGlancesApi[API_TOKEN][API_VALUE]);
-      $receipt = $client->pushGlances($glances, $httpGlancesApi[API_DEVICE][API_VALUE]);
+      $receipt = $client->updateGlances($glances, $httpGlancesApi[API_DEVICE][API_VALUE]);
       if(!$receipt->hasReceipt()){
          $logger->logDebug("Got no receipt for glances");
          $receipt->setReceipt("000000000000000000000000000000");
       }
-      else {
-      $logger->logDebug("The glances has been pushed!");
-      }
+      $logger->logDebug("The glances has been updated!");
       /***************************************************************************
        * http response
        */
