@@ -7,6 +7,7 @@ date_default_timezone_set('UTC');
 
 use LeonardoTeixeira\Pushover\Client;
 use LeonardoTeixeira\Pushover\Message;
+use LeonardoTeixeira\Pushover\Glances;
 use LeonardoTeixeira\Pushover\Priority;
 use LeonardoTeixeira\Pushover\Sound;
 use LeonardoTeixeira\Pushover\Receipt;
@@ -20,6 +21,7 @@ const CFG_DATEFORMAT = 'dateformat';
 const JOB_POLL       = 'poll';
 const JOB_PUSH       = 'push';
 const JOB_CANCEL     = 'cancel';
+const JOB_GLANCES    = 'glances';
 const API_JOB        = 'job';
 const API_USER       = 'user';
 const API_TOKEN      = 'token';
@@ -40,6 +42,10 @@ const API_RECEIPT    = 'receipt';
 const API_VALUE      = 'value';
 const API_ECHO       = 'echo';
 const API_CONFIG     = 'config';
+const API_TEXT       = 'text';
+const API_SUBTEXT    = 'subtext';
+const API_COUNT      = 'count';
+const API_PERCENT    = 'percent';
 /**
  * Parse gerneric configuration part from the ini file
  */
@@ -79,7 +85,7 @@ $logger->logDebug("Process '".($_SERVER['REQUEST_URI'])."'");
 $mandatory = [ true, API_VALUE => null ]; // Comes either form POST/GET or from pushover-http.config.php. Do not change from null to ""!
 $optional = [ false, API_VALUE => null ]; // null variables will not be set in the message object (see pushover message preparation section)
 $httpPushApi = [
-   API_JOB       =>  $mandatory, // Job selector. 'push' or 'poll' allowed.
+   API_JOB       =>  $mandatory, // Job selector. Use 'push'.
    API_USER      =>  $mandatory, // The user/group key (not e-mail address) of your user (or you), viewable
                                  // when logged into our dashboard (often referred to as USER_KEY in our
                                  // documentation and code examples)
@@ -107,14 +113,31 @@ $httpPushApi = [
 ];
 
 $httpPollCancelApi = [
-   API_JOB       =>  $mandatory, // Job selector. 'push' or 'poll' allowed.
+   API_JOB       =>  $mandatory, // Job selector. Use 'poll' or 'cancel'.
    API_RECEIPT   =>  $mandatory, // This receipt can be used to periodically poll the receipts API to get the status of your notification
    API_TOKEN     =>  $mandatory, // Your application's API token
    API_ECHO      =>  $optional,  // Set this to redirect debug logs to the http response (GET only)
    API_CONFIG    =>  $optional   // The configuration group within the ini-file that should be used
 ];
 
-try {  
+$httpGlancesApi = [
+   API_JOB       =>  $mandatory, // Job selector. Use 'glances'.
+   API_USER      =>  $mandatory, // The user/group key (not e-mail address) of your user (or you), viewable
+                                 // when logged into our dashboard (often referred to as USER_KEY in our
+                                 // documentation and code examples)
+   API_TOKEN     =>  $mandatory, // Your application's API token
+   API_TITLE     =>  $optional,  // a description of the data being shown, such as "Widgets Sold"
+   API_TEXT      =>  $optional,  //  the main line of data, used on most screens
+   API_SUBTEXT   =>  $optional,  // a second line of data
+   API_COUNT     =>  $optional,  // (integer, may be negative) - shown on smaller screens; useful for simple counts
+   API_PERCENT   =>  $optional,  // (integer 0 through 100, inclusive) - shown on some screens as a progress bar/circle
+   API_ECHO      =>  $optional,  // Set this to redirect debug logs to the http response (GET only)
+   API_CONFIG    =>  $optional,  // The configuration group within the ini-file that should be used
+   API_DEVICE    =>  $optional   // Your user's device name to send the message directly to that device,
+                                 // rather than all of the user's devices (multiple devices may be separated by a comma)
+];
+
+try {
    /***************************************************************************
     * Select requested method...
     */
@@ -129,13 +152,15 @@ try {
     * Select HTTP API
     */
    if(!isset($request[API_JOB]) || $request[API_JOB] == "") {
-      throw new Exception("Got no job parameter. Use either '".JOB_POLL."', '".JOB_PUSH."' or '".JOB_CANCEL."'!");
-   } else if (!in_array($request[API_JOB], [JOB_POLL, JOB_PUSH, JOB_CANCEL])) {
-      throw new Exception("Job ".$request[API_JOB]." is invalid. Use either '".JOB_POLL."', '".JOB_PUSH."' or '".JOB_CANCEL."'!");
+      throw new Exception("Got no job parameter. Use either '".JOB_POLL."', '".JOB_PUSH."' or '".JOB_CANCEL."' or '".JOB_GLANCES."'!");
+   } else if (!in_array($request[API_JOB], [JOB_POLL, JOB_PUSH, JOB_CANCEL, JOB_GLANCES])) {
+      throw new Exception("Job ".$request[API_JOB]." is invalid. Use either '".JOB_POLL."', '".JOB_PUSH."' or '".JOB_CANCEL."' or '".JOB_GLANCES."'!");
    } else {
       if($request[API_JOB] == JOB_POLL || $request[API_JOB] == JOB_CANCEL) {
          $httpApi = &$httpPollCancelApi;
-      } else {
+      } else if ($request[API_JOB] == JOB_GLANCES) {
+         $httpApi = &$httpGlancesApi;
+      }else{
          $httpApi = &$httpPushApi;
       }
       $httpApi[API_JOB][API_VALUE] = $request[API_JOB];
@@ -224,13 +249,13 @@ try {
          $attachment = tmpfile();
          fwrite($attachment,$request->body);
          $meta_data = stream_get_meta_data($attachment);
-         $httpPushApi[API_ATTACHMENT][API_VALUE] = $meta_data["uri"];   
+         $httpPushApi[API_ATTACHMENT][API_VALUE] = $meta_data["uri"];
       }
       if(!file_exists($httpPushApi[API_ATTACHMENT][API_VALUE]))
          throw new Exception("Failed to open ".API_ATTACHMENT);
    }
    /***************************************************************************
-    * Execute the push, poll or cancel job
+    * Execute the push, poll, cancel or glances job
     */
    if($httpApi[API_JOB][API_VALUE] == JOB_PUSH) {
       /***************************************************************************
@@ -308,6 +333,37 @@ try {
       $client = new Client(null, $httpApi[API_TOKEN][API_VALUE]);
       $client->cancel($receipt);
       $logger->logDebug("Notification with the receipt ".$httpApi[API_RECEIPT][API_VALUE]." has been cancelled!");
+   } else if($httpApi[API_JOB][API_VALUE] == JOB_GLANCES) {
+    /***************************************************************************
+       * Message preparation for glance
+       */
+      $glances = new Glances();
+      // values are preinitialized with null
+      if(!is_null($httpGlancesApi[API_TITLE][API_VALUE]))
+         $glances->setTitle($httpGlancesApi[API_TITLE][API_VALUE]);
+      if(!is_null($httpGlancesApi[API_TEXT][API_VALUE]))
+         $glances->setText($httpGlancesApi[API_TEXT][API_VALUE]);
+      if(!is_null($httpGlancesApi[API_SUBTEXT][API_VALUE]))
+         $glances->setSubtext($httpGlancesApi[API_SUBTEXT][API_VALUE]);
+      if(!is_null($httpGlancesApi[API_COUNT][API_VALUE]))
+         $glances->setCount($httpGlancesApi[API_COUNT][API_VALUE]);
+      if(!is_null($httpGlancesApi[API_PERCENT][API_VALUE]))
+         $glances->setPercent($httpGlancesApi[API_PERCENT][API_VALUE]);
+
+      /***************************************************************************
+       * Pushover  glances
+       */
+      $client = new Client($httpGlancesApi[API_USER][API_VALUE], $httpGlancesApi[API_TOKEN][API_VALUE]);
+      $receipt = $client->updateGlances($glances, $httpGlancesApi[API_DEVICE][API_VALUE]);
+      if(!$receipt->hasReceipt()){
+         $logger->logDebug("Got no receipt for glances");
+         $receipt->setReceipt("000000000000000000000000000000");
+      }
+      $logger->logDebug("The glances has been updated!");
+      /***************************************************************************
+       * http response
+       */
+      echo $receipt->getReceipt();
    }
    else {
       throw new Exception("Unexpected ".API_JOB." value ".$httpApi[API_JOB][API_VALUE]);
