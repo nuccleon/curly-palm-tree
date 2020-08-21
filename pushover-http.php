@@ -85,7 +85,7 @@ $logger->logDebug("Process '".($_SERVER['REQUEST_URI'])."'");
 $mandatory = [ true, API_VALUE => null ]; // Comes either form POST/GET or from pushover-http.config.php. Do not change from null to ""!
 $optional = [ false, API_VALUE => null ]; // null variables will not be set in the message object (see pushover message preparation section)
 $httpPushApi = [
-   API_JOB       =>  $mandatory, // Job selector. 'push' or 'poll' allowed.
+   API_JOB       =>  $mandatory, // Job selector. Use 'push'.
    API_USER      =>  $mandatory, // The user/group key (not e-mail address) of your user (or you), viewable
                                  // when logged into our dashboard (often referred to as USER_KEY in our
                                  // documentation and code examples)
@@ -113,7 +113,7 @@ $httpPushApi = [
 ];
 
 $httpPollCancelApi = [
-   API_JOB       =>  $mandatory, // Job selector. 'push' or 'poll' allowed.
+   API_JOB       =>  $mandatory, // Job selector. Use 'poll' or 'cancel'.
    API_RECEIPT   =>  $mandatory, // This receipt can be used to periodically poll the receipts API to get the status of your notification
    API_TOKEN     =>  $mandatory, // Your application's API token
    API_ECHO      =>  $optional,  // Set this to redirect debug logs to the http response (GET only)
@@ -121,7 +121,7 @@ $httpPollCancelApi = [
 ];
 
 $httpGlancesApi = [
-   API_JOB       =>  $mandatory, // Job selector. 'push' or 'poll' allowed.
+   API_JOB       =>  $mandatory, // Job selector. Use 'glances'.
    API_USER      =>  $mandatory, // The user/group key (not e-mail address) of your user (or you), viewable
                                  // when logged into our dashboard (often referred to as USER_KEY in our
                                  // documentation and code examples)
